@@ -1,4 +1,4 @@
-const VERSION='clock-sync-v3';
+const VERSION='clock-sync-v4-controls';
 self.addEventListener('install',event=>event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
 self.addEventListener('fetch',event=>{
@@ -54,6 +54,8 @@ function trigger(i,vel=1,gate=false){ensureAudio();if(!buffer||!slices[i]){beep(
     const modeHandler="$('modeBtn').onclick=()=>{const order=['oneshot','gate','loop','full'];playMode=order[(order.indexOf(playMode)+1)%order.length];$('modeBtn').textContent='Mode: '+modeNames[playMode];log('Mode set to <b>'+modeNames[playMode]+'</b>.')}";
     const modeHandlerFixed="$('modeBtn').onclick=()=>{const order=['oneshot','gate','loop','full'];const next=order[(order.indexOf(playMode)+1)%order.length];if(playMode==='loop'&&next!=='loop')stopActive(true);playMode=next;$('modeBtn').textContent='Mode: '+modeNames[playMode];log('Mode set to <b>'+modeNames[playMode]+'</b>.')}";
     html=html.replace(modeHandler,modeHandlerFixed);
+
+    if(!html.includes('performance-controls.js'))html=html.replace('</body>','<script src="./performance-controls.js?v=1"></script></body>');
 
     const headers=new Headers(res.headers);
     headers.set('cache-control','no-store, max-age=0');
