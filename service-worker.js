@@ -1,4 +1,4 @@
-const VERSION='clock-sync-v2';
+const VERSION='clock-sync-v3';
 self.addEventListener('install',event=>event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
 self.addEventListener('fetch',event=>{
@@ -51,8 +51,8 @@ function trigger(i,vel=1,gate=false){ensureAudio();if(!buffer||!slices[i]){beep(
     const reverseFixed="function reverse(){if(!buffer){log('Load audio before reversing.');return}stopActive(true);for(let c=0;c<buffer.numberOfChannels;c++)Array.prototype.reverse.call(buffer.getChannelData(c));makeSlices(chopMode==='grid');log('Audio reversed and re-chopped. Clock reset.')}";
     html=html.replace(reverse,reverseFixed);
 
-    const modeHandler="$(`modeBtn`).onclick=()=>{const order=['oneshot','gate','loop','full'];playMode=order[(order.indexOf(playMode)+1)%order.length];$('modeBtn').textContent='Mode: '+modeNames[playMode];log('Mode set to <b>'+modeNames[playMode]+'</b>.')}";
-    const modeHandlerFixed="$(`modeBtn`).onclick=()=>{const order=['oneshot','gate','loop','full'];const next=order[(order.indexOf(playMode)+1)%order.length];if(playMode==='loop'&&next!=='loop')stopActive(true);playMode=next;$('modeBtn').textContent='Mode: '+modeNames[playMode];log('Mode set to <b>'+modeNames[playMode]+'</b>.')}";
+    const modeHandler="$('modeBtn').onclick=()=>{const order=['oneshot','gate','loop','full'];playMode=order[(order.indexOf(playMode)+1)%order.length];$('modeBtn').textContent='Mode: '+modeNames[playMode];log('Mode set to <b>'+modeNames[playMode]+'</b>.')}";
+    const modeHandlerFixed="$('modeBtn').onclick=()=>{const order=['oneshot','gate','loop','full'];const next=order[(order.indexOf(playMode)+1)%order.length];if(playMode==='loop'&&next!=='loop')stopActive(true);playMode=next;$('modeBtn').textContent='Mode: '+modeNames[playMode];log('Mode set to <b>'+modeNames[playMode]+'</b>.')}";
     html=html.replace(modeHandler,modeHandlerFixed);
 
     const headers=new Headers(res.headers);
