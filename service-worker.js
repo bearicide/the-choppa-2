@@ -1,4 +1,4 @@
-const VERSION='clock-sync-v3-fx-router-v3';
+const VERSION='clock-sync-v3-fx-router-v4-direct';
 self.addEventListener('install',event=>event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
 self.addEventListener('fetch',event=>{
@@ -55,7 +55,7 @@ function trigger(i,vel=1,gate=false){ensureAudio();if(!buffer||!slices[i]){beep(
     const modeHandlerFixed="$('modeBtn').onclick=()=>{const order=['oneshot','gate','loop','full'];const next=order[(order.indexOf(playMode)+1)%order.length];if(playMode==='loop'&&next!=='loop')stopActive(true);playMode=next;$('modeBtn').textContent='Mode: '+modeNames[playMode];log('Mode set to <b>'+modeNames[playMode]+'</b>.')}";
     html=html.replace(modeHandler,modeHandlerFixed);
 
-    if(!html.includes('fx-router.js?v=3'))html=html.replace(/<script src="\.\/fx-router\.js\?v=\d+"><\/script>/,'').replace('</body>','<script src="./fx-router.js?v=3"></script></body>');
+    html=html.replace(/<script src="\.\/fx-router\.js\?v=\d+"><\/script>/,'').replace('</body>','<script src="./fx-router.js?v=4"></script></body>');
 
     const headers=new Headers(res.headers);
     headers.set('cache-control','no-store, max-age=0');
