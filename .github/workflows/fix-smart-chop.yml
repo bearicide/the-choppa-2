@@ -1,0 +1,47 @@
+name: Fix Smart Chop full-song coverage
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-smart-chop.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch Smart Chop distribution
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+          old = "hits.unshift(0);let picked=[...new Set(hits)].filter(x=>x<dur-.08).slice(0,16);while(picked.length<16)picked.push(dur*picked.length/16);picked=picked.slice(0,16).sort((a,b)=>a-b);"
+          new = "hits.unshift(0);const candidates=[...new Set(hits)].filter(x=>x<dur-.08).sort((a,b)=>a-b);let picked=[];for(let i=0;i<16;i++){const regionStart=dur*i/16,regionEnd=dur*(i+1)/16,match=candidates.find(x=>x>=regionStart&&x<regionEnd);picked.push(match??regionStart)}"
+          if old not in text:
+              if new in text:
+                  print('Patch already applied.')
+                  raise SystemExit(0)
+              raise SystemExit('Expected Smart Chop code not found.')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+      - name: Validate patch
+        run: |
+          grep -F "const candidates=[...new Set(hits)]" index.html
+          grep -F "match??regionStart" index.html
+      - name: Commit fix
+        run: |
+          if git diff --quiet; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Fix Smart Chop full-song coverage'
+          git push
